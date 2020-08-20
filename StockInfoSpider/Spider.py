@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-\
+# -*- coding: utf-8 -*-
 # Written by panzy
 
 import requests
