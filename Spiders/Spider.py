@@ -5,6 +5,7 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import json
+import os
 
 '''
     用于实现虎嗅网的相关爬取工作
@@ -64,25 +65,40 @@ def writeToDisk(path, articleInfo):
         f.write(str(articleInfo['title']) + '\n' +str(articleInfo['time']) + '\n' + str(articleInfo['content']) + '\n')
         f.close()
 
-if __name__ == '__main__':
-    path = 'C:\\Users\\Tommy Pan\\Desktop\\test\\'
-    url = 'https://search-api.huxiu.com/api/article'
+def getHotKeyWords():
+    hotURL = 'https://article-api.huxiu.com/tag/hot'
     formData = {
-        'platform': 'www', # 从PC平台检索
-        's': '人工智能', # s是检索内容
-        'page': 1, # page是翻页指标
-        'pagesize': 20 # pagesize不会影响page的翻页，即使超过也能访问
+        'platform': 'www',  # 从PC平台检索
     }
+    hotResponse = requests.post(hotURL, data=formData)
+    hotKeyWordsJson = json.loads(hotResponse.text)
+    hotKeyWordsList = hotKeyWordsJson['data']
+    return hotKeyWordsList
 
-    while(True):
-        articleLinkList = getSearchLink(url, formData)
-        if articleLinkList == []:
-            break
-        for articleNum in articleLinkList:
-            articleURL = 'https://m.huxiu.com/article/'+ str(articleNum) + '.html'
-            writeToDisk(path + str(articleNum) + '.txt', processContent(getArticleContent(articleURL)))
-        # formData['page'] = formData['page'] + 1
-        #print(formData['page'])
+if __name__ == '__main__':
+    path = 'C:\\Users\\Tommy Pan\\Desktop\\huxiu\\'
+    url = 'https://search-api.huxiu.com/api/article'
+    hotKeyWordsList = getHotKeyWords()
+    for hotKeyWord in hotKeyWordsList:
+        formData = {
+            'platform': 'www', # 从PC平台检索
+            's': hotKeyWord, # s是检索内容
+            'page': 1, # page是翻页指标
+            'pagesize': 20 # pagesize不会影响page的翻页，即使超过也能访问
+        }
+
+        while(True):
+            articleLinkList = getSearchLink(url, formData)
+            print('Search for: ' + hotKeyWord + ' page: ' + str(formData['page']))
+            if articleLinkList == []:
+                break
+            for articleNum in articleLinkList:
+                articleURL = 'https://m.huxiu.com/article/'+ str(articleNum) + '.html'
+                if os.path.exists(path + hotKeyWord + str(articleNum) + '.txt'):
+                    continue
+                else: writeToDisk(path + hotKeyWord + str(articleNum) + '.txt', processContent(getArticleContent(articleURL)))
+            formData['page'] = formData['page'] + 1
+
 
     # 用于使用栏目分类的爬取
     #url = 'https://article-api.huxiu.com/web/channel/articleList'
