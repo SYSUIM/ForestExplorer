@@ -1,4 +1,5 @@
-<<<<<<< HEAD:StockInfoSpider/mckinsey_spider.py
+#-*- coding:utf-8 -*-
+
 import requests
 import time
 from bs4 import BeautifulSoup
@@ -70,5 +71,4 @@ if __name__=='__main__':
 
 
 
-        
->>>>>>> 6ddfcb4e6ea81536537c0c1642ddb8ff18ab3e5c:Spiders/mckinsey_spider.py
+    

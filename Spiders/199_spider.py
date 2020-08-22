@@ -1,5 +1,4 @@
-<<<<<<< HEAD:StockInfoSpider/199_spider.py
-##-*- coding:utf-8 -*-
+#-*- coding:utf-8 -*-
 
 import re
 import requests
@@ -92,4 +91,4 @@ if __name__ == "__main__":
 
 
 
->>>>>>> 6ddfcb4e6ea81536537c0c1642ddb8ff18ab3e5c:Spiders/199_spider.py
+
