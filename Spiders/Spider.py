@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 import re
 import json
 import os
+import time
 
 '''
     用于实现虎嗅网的相关爬取工作
@@ -20,8 +21,9 @@ def getArticleContent(articleURL):
         res.raise_for_status()
         res.encoding = 'utf-8'
         return res.text
-    except:
-        print('HTTPError: request failed.')
+    except requests.HTTPError as e:
+        print(e)
+        print('HTTPError: Request for Article Failed.')
 
 # 对静态文章网页进行解析，返回含标题，时间和内容的字典
 def processContent(content):
@@ -40,24 +42,43 @@ def processContent(content):
 
 # 对网站流页面的爬取，存在翻页的问题，暂时弃用
 def getStreamLink(url, formData):
-    articleLinkRes = requests.post(url, data = formData)
-    articleLinkResJson = json.loads(articleLinkRes.text)
-    articleLinkList = []
-    for articleData in articleLinkResJson['data']['datalist']:
-        articleLinkList.append(articleData['share_url'])
-    print(articleLinkList, len(articleLinkList))
-    return articleLinkList
+    try:
+        articleLinkRes = requests.post(url, data = formData)
+        articleLinkRes.raise_for_status()
+        articleLinkResJson = json.loads(articleLinkRes.text)
+        articleLinkList = {
+            'articleLinks': []
+        }
+        articleLinkList['last_time'] = articleLinkResJson['data']['last_time']
+        for articleData in articleLinkResJson['data']['datalist']:
+            articleLinkList['articleLinks'].append(articleData['share_url'])
+        print(articleLinkList['articleLinks'], len(articleLinkList['articleLinks']))
+        return articleLinkList
+    except requests.HTTPError as e:
+        print(e)
+        print('Failed to flowing visit ' + url)
+    except Exception as e:
+        print(e)
+        print('Other Error happened.')
 
 # 对网站进行指定关键词检索，获得检索结果中的文章编号
 def getSearchLink(url, formData):
-    articleLinkRes = requests.post(url, data = formData)
-    articleLinkList = []
-    articleLinkRes.encoding = 'utf-8'
-    articleLinkResJson = json.loads(articleLinkRes.text)
-    for articleData in articleLinkResJson['data']['datalist']:
-        articleLinkList.append(articleData['aid'])
-    print(articleLinkList, len(articleLinkList))
-    return articleLinkList
+    try:
+        articleLinkRes = requests.post(url, data = formData)
+        articleLinkRes.raise_for_status()
+        articleLinkList = []
+        articleLinkRes.encoding = 'utf-8'
+        articleLinkResJson = json.loads(articleLinkRes.text)
+        for articleData in articleLinkResJson['data']['datalist']:
+            articleLinkList.append(articleData['aid'])
+        print(articleLinkList, len(articleLinkList))
+        return articleLinkList
+    except Exception as e:
+        print(e)
+        print('Failed to keyword visit ' + url)
+    except Exception as e:
+        print(e)
+        print('Other Error happened.')
 
 # 写入到指定路径，根据文章相关信息进行写入
 def writeToDisk(path, articleInfo):
@@ -75,36 +96,60 @@ def getHotKeyWords():
     hotKeyWordsList = hotKeyWordsJson['data']
     return hotKeyWordsList
 
-if __name__ == '__main__':
-    path = 'C:\\Users\\Tommy Pan\\Desktop\\huxiu\\'
-    url = 'https://search-api.huxiu.com/api/article'
+def crawlOnChannel(channelURL, channelFormData, path):
+    while (True):
+        articleLinkList = getStreamLink(channelURL, channelFormData)
+        try:
+            channelFormData['last_time'] = articleLinkList['last_time']
+            if os.path.exists(path + str(articleLink)[-11:-5] + '.txt'):
+                continue
+            for articleLink in articleLinkList['articleLinks']:
+                writeToDisk(path + str(articleLink)[-11:-5] + '.txt', processContent(getArticleContent(articleLink)))
+        except TypeError as e:
+            print('Stream Ended.')
+            break
+
+def crawlBySearch(searchURL, searchFormData, path):
     hotKeyWordsList = getHotKeyWords()
     for hotKeyWord in hotKeyWordsList:
-        formData = {
-            'platform': 'www', # 从PC平台检索
-            's': hotKeyWord, # s是检索内容
-            'page': 1, # page是翻页指标
-            'pagesize': 20 # pagesize不会影响page的翻页，即使超过也能访问
-        }
-
-        while(True):
-            articleLinkList = getSearchLink(url, formData)
-            print('Search for: ' + hotKeyWord + ' page: ' + str(formData['page']))
+        searchFormData['s'] = '电商' # s是检索内容
+        hotKeyWord = searchFormData['s']
+        while (True):
+            articleLinkList = getSearchLink(searchURL, searchFormData)
+            print('Search for: ' + hotKeyWord + ' page: ' + str(searchFormData['page']))
             if articleLinkList == []:
                 break
+            elif articleLinkList == None:
+                break
             for articleNum in articleLinkList:
-                articleURL = 'https://m.huxiu.com/article/'+ str(articleNum) + '.html'
+                articleURL = 'https://m.huxiu.com/article/' + str(articleNum) + '.html'
                 if os.path.exists(path + hotKeyWord + str(articleNum) + '.txt'):
                     continue
-                else: writeToDisk(path + hotKeyWord + str(articleNum) + '.txt', processContent(getArticleContent(articleURL)))
-            formData['page'] = formData['page'] + 1
+                else:
+                    writeToDisk(path + hotKeyWord + str(articleNum) + '.txt',
+                                processContent(getArticleContent(articleURL)))
+            searchFormData['page'] = searchFormData['page'] + 1
 
+if __name__ == '__main__':
+    path = 'C:\\Users\\Tommy Pan\\Desktop\\stream\\'
 
     # 用于使用栏目分类的爬取
-    #url = 'https://article-api.huxiu.com/web/channel/articleList'
-    #formData = {
-    #    'platform': 'www',
-    #    'last_time': '16000647150',
-    #    'channel_id': '105',
-    #    'pagesize':'22'
-    #}
+    channelURL = 'https://article-api.huxiu.com/web/channel/articleList'
+    channelFormData = {
+        'platform': 'www',
+        'last_time': '1597894020',
+        'channel_id': '105',
+        'pagesize': '22'
+    }
+
+    # 用于使用检索词的爬取(包含热门检索词的获取)
+    searchURL = 'https://search-api.huxiu.com/api/article'
+    searchFormData = {
+        'platform': 'www',  # 从PC平台检索
+        'page': 1,  # page是翻页指标
+        'pagesize': 20  # pagesize不会影响page的翻页，即使超过也能访问
+    }
+
+    crawlOnChannel(channelURL, channelFormData, path) # 栏目流爬取
+
+    crawlBySearch(searchURL, searchFormData, path) # 关键词检索爬取
