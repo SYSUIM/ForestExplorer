@@ -101,10 +101,10 @@ def crawlOnChannel(channelURL, channelFormData, path):
         articleLinkList = getStreamLink(channelURL, channelFormData)
         try:
             channelFormData['last_time'] = articleLinkList['last_time']
-            if os.path.exists(path + str(articleLink)[-11:-5] + '.txt'):
-                continue
             for articleLink in articleLinkList['articleLinks']:
-                writeToDisk(path + str(articleLink)[-11:-5] + '.txt', processContent(getArticleContent(articleLink)))
+                if os.path.exists(path + str(articleLink)[-11:-5] + '.txt'):
+                    continue
+                else: writeToDisk(path + str(articleLink)[-11:-5] + '.txt', processContent(getArticleContent(articleLink)))
         except TypeError as e:
             print('Stream Ended.')
             break
@@ -126,8 +126,7 @@ def crawlBySearch(searchURL, searchFormData, path):
                 if os.path.exists(path + hotKeyWord + str(articleNum) + '.txt'):
                     continue
                 else:
-                    writeToDisk(path + hotKeyWord + str(articleNum) + '.txt',
-                                processContent(getArticleContent(articleURL)))
+                    writeToDisk(path + hotKeyWord + str(articleNum) + '.txt',processContent(getArticleContent(articleURL)))
             searchFormData['page'] = searchFormData['page'] + 1
 
 if __name__ == '__main__':
@@ -152,4 +151,4 @@ if __name__ == '__main__':
 
     crawlOnChannel(channelURL, channelFormData, path) # 栏目流爬取
 
-    crawlBySearch(searchURL, searchFormData, path) # 关键词检索爬取
+    # crawlBySearch(searchURL, searchFormData, path) # 关键词检索爬取
