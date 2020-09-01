@@ -11,7 +11,7 @@ import time
 import logging
 
 trapInfo = {}
-hotKeyWordsPath = 'C:\\Users\\Tommy Pan\\Desktop\\huxiu\\hotKeyword.txt'
+hotKeyWordsPath = '/home/st01/ForestExplorer/hotKeyword.txt'
 
 '''
     用于实现虎嗅网的相关爬取工作
@@ -108,7 +108,7 @@ def writeToDisk(path, articleInfo):
     if articleInfo['content'] == None:
         return
     with open(path, 'a', encoding='utf-8') as f:
-        f.write(str(articleInfo['title']) + '\n' +str(articleInfo['time']) + '\n' + str(articleInfo['content']) + '\n')
+        f.write(str(articleInfo['title']) + '\n' + str(articleInfo['time']) + '\n' + str(articleInfo['content']) + '\n')
         f.close()
 
 # 获取热搜词条
@@ -186,7 +186,7 @@ def crawlBySearch(searchURL, searchFormData, path):
 
 # 进行热搜爬取的指令
 def crawlJob_search():
-    path = 'C:\\Users\\Tommy Pan\\Desktop\\huxiu\\search\\'
+    path = '/home/st01/ForestExplorer/HuXiuData/'
     # 用于使用检索词的爬取(包含热门检索词的获取)
     searchURL = 'https://search-api.huxiu.com/api/article'
     searchFormData = {
@@ -203,7 +203,7 @@ def crawlJob_search():
 
 # 进行频道内容的爬取指令
 def crawlJob_Stream():
-    path = 'C:\\Users\\Tommy Pan\\Desktop\\huxiu\\stream\\'
+    path = '/home/st01/ForestExplorer/HuXiuData/'
     # 用于使用栏目分类的爬取
     channelURL = 'https://article-api.huxiu.com/web/channel/articleList'
     channelFormData = {
@@ -237,6 +237,8 @@ def updateKeywords():
         elif exit_flag == True:
             # 已存在于等候队列
             continue
+        elif hotKeywordJson['awaiting'][0]['page'] > 200:
+            hotKeywordJson['awaiting'].pop(0)
         else:
             hotKeywordInfo = {
                 'keyword': hotKeyword,
@@ -256,10 +258,11 @@ def updateKeywords():
 
 
 if __name__ == '__main__':
-    # 创建调度器：BlockingScheduler
-    scheduler = BlockingScheduler()
-    # 添加任务,时间间隔20min
-    scheduler.add_job(crawlJob_search, 'interval', minutes = 30, id = 'crawlJob_search')
-    # 添加任务,时间间隔20min
-    # scheduler.add_job(crawlJob_Stream, 'interval', hours = 1, id = 'crawlJob_stream')
-    scheduler.start()
+    # # 创建调度器：BlockingScheduler
+    # scheduler = BlockingScheduler()
+    # # 添加任务,时间间隔20min
+    # scheduler.add_job(crawlJob_search, 'interval', minutes = 30, id = 'crawlJob_search')
+    # # 添加任务,时间间隔20min
+    # # scheduler.add_job(crawlJob_Stream, 'interval', hours = 1, id = 'crawlJob_stream')
+    # scheduler.start()
+    crawlJob_search()
