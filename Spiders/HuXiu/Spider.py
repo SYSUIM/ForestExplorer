@@ -258,11 +258,10 @@ def updateKeywords():
 
 
 if __name__ == '__main__':
-    # # 创建调度器：BlockingScheduler
-    # scheduler = BlockingScheduler()
-    # # 添加任务,时间间隔20min
-    # scheduler.add_job(crawlJob_search, 'interval', minutes = 30, id = 'crawlJob_search')
-    # # 添加任务,时间间隔20min
-    # # scheduler.add_job(crawlJob_Stream, 'interval', hours = 1, id = 'crawlJob_stream')
-    # scheduler.start()
-    crawlJob_search()
+    # 创建调度器：BlockingScheduler
+    scheduler = BlockingScheduler()
+    # 添加任务,时间间隔20min
+    scheduler.add_job(crawlJob_search, 'interval', minutes = 30, id = 'crawlJob_search')
+    # 添加任务,时间间隔20min
+    # scheduler.add_job(crawlJob_Stream, 'interval', hours = 1, id = 'crawlJob_stream')
+    scheduler.start()
