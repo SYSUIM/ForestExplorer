@@ -28,7 +28,7 @@ def processStream(streamContent):
         }
         articleLinkInfoList.append(articleLinkInfo)
     for articleLinkInfo in articleLinkInfoList:
-        print(articleLinkInfo['link'] + ' ' + articleLinkInfo['title'])
+        print(articleLinkInfo['link'])
     return articleLinkInfoList
 
 def getRequestText(articleURL):
@@ -54,18 +54,29 @@ def spiderLeiPhone(articleLinkInfoList):
     articleContentList = []
     for articleInfo in articleLinkInfoList:
         articleContentInfo = processArticleText(getRequestText(articleInfo['link']))
+        name = str(articleInfo['link'])[-21:-5]
         articleTitle = articleInfo['title']
         articleInfoDic = {
             'content' : articleContentInfo['content'],
             'time' : articleContentInfo['time'],
-            'title' : articleTitle
+            'title' : articleTitle,
+            'url': name
         }
-        print(articleInfoDic['title'] + ' ' + articleInfoDic['time'])
         articleContentList.append(articleInfoDic)
     return articleContentList
 
 if __name__ == '__main__':
-    activeURL = 'https://www.leiphone.com/category/sponsor/page/1'
-    articleLinkInfoList = processStream(getStreamLink(activeURL))
-    # 带字典的列表
-    spiderLeiPhone(articleLinkInfoList)
+    
+    i = 2
+    while i<3:
+        activeURL = 'https://www.leiphone.com/category/sponsor/page/'+str(i)
+        articleLinkInfoList = processStream(getStreamLink(activeURL))
+        # 带字典的列表
+        articleContentList = spiderLeiPhone(articleLinkInfoList)
+        for item in articleContentList:
+            with open('c:\\Users\\hzs\\Desktop\\dataProcess\\leifeng\\{0}.txt'.format(item['url']),'a',encoding='utf-8') as f:
+                f.write(str(articleContentList[0]['title'])+'\n'+str(articleContentList[0]['time'])+'\n'+str(articleContentList[0]['content']))
+                f.close()
+        i=i+1
+
+
