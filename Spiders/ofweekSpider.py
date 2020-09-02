@@ -3,6 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 titles=[]
 urls=[]
+
 keyword=input("输入想要在维科网搜索的关键字：")
 pagenum=input("输入想要查找的前几页（如果输入2，即找前2页的）：")
 txt_name="关键词："+keyword+"前"+pagenum+"页具体内容.txt"
