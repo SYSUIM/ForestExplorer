@@ -5,8 +5,10 @@ titles=[]
 urls=[]
 
 keyword=input("输入想要在维科网搜索的关键字：")
-pagenum=input("输入想要查找的前几页（如果输入2，即找前2页的）：")
-txt_name="关键词："+keyword+"前"+pagenum+"页具体内容.txt"
+# keyword = '通讯设备制造业'
+# pagenum=input("输入想要查找的前几页（如果输入2，即找前2页的）：")
+pagenum = '20'
+txt_name = keyword+"page"+pagenum+".txt"
 with open(txt_name,'w',encoding='utf-8') as f:
     f.write(txt_name+'\r')
     f.close()
@@ -27,7 +29,8 @@ for i in range(1,int(pagenum)+1):
         content=resp.text
         bs=BeautifulSoup(content,'html.parser')
         page_content=bs.select('div.artical-content')[0].text
-        with open(txt_name,'a',encoding='utf-8') as f:
-            f.write("\n"+titles[i]+page_content)
-            f.close()
+        # print(page_content)
+        # with open(txt_name,'a',encoding='utf-8') as f:
+        #     f.write("\n"+titles[i]+page_content)
+        #     f.close()
 print("txt文件已经成功记录！")
