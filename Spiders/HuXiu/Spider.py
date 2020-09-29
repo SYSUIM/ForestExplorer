@@ -11,7 +11,7 @@ import time
 import logging
 
 trapInfo = {}
-hotKeyWordsPath = '/home/st01/ForestExplorer/hotKeyword.txt'
+hotKeyWordsPath = './hotKeyword.txt'
 
 '''
     用于实现虎嗅网的相关爬取工作
