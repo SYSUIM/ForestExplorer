@@ -9,31 +9,36 @@
   <img src="https://img.shields.io/badge/Bert-unknown-purple"/>
 </p>
 
-ForestExplorer 是完全基于python语言开发的，基于企业内部、行业市场外部特征进行发展预测的数据分析框架。使用 Anaconda (4.8.3) 和 pip (20.1.1) 管理第三方包。
+ForestExplorer 是完全基于python语言开发的，基于企业内部、行业市场外部特征进行发展预测的数据分析框架。使用 Anaconda (4.8.3) 和 pip (20.1.1) 配置代码环境。
 
-
+<br><br>
 
 ## 0. Content
-
+---
 本节将对我们的工作作简要描述，根据数据处理的工作流程，分为以下三个模块：
 
 - [特征分析框架](#tezhengfenxi)
   - [网络爬虫](#spider)
+  - [数据抽取](#dataextraction)
 
-- [策略编码器](#encoding)
-  - [fd]() 
-- [序列拟合模型](#model)
+- [多源数据策略编码器](#encoding)
+  - [One-hot](#onehot)
+  - [Bert](#bert)
+  - [数据归一化](#datanormalization)
+
+- [序列拟合模型(MultiSource-LSTM)](#model)
+  - [Load DataSet](#loaddataset)
   - [Baseline](#baseline)
 
+<br>
 
+## <span id="tezhengfenxi">1. 特征分析框架</span>
+---
+特征分析框架主要完成以下工作：[网络爬虫](#spider)、[数据抽取](#dataextraction)。
 
-## 1. 特征分析框架
+<br>
 
-特征分析框架主要完成以下工作：数据爬取、数据抽取。
-
-
-
-### 1.1 数据爬取
+### <span id="spider">1.1 网络爬虫</span>
 
 实验中出于对行业的外部环境特征分析的需要，对高新科技门户网站的文本内容进行规则框架内、有限度的爬取，各网站内容详情请见[虎嗅网](https://www.huxiu.com/)，[199IT](http://www.199it.com/)，[36氪](https://36kr.com/)，[雷锋网](https://www.leiphone.com/)，[科学世界网](http://www.twwtn.com)，[维科网](https://www.ofweek.com)。
 
@@ -49,6 +54,7 @@ ForestExplorer 是完全基于python语言开发的，基于企业内部、行�
 |      lxml      |  4.5.1  |
 |  APScheduler   |  2.1.2  |
 
+<br>
 
 保存以下代码至当前目录下新文件 `./SpiderRequirements.txt` 以安装python爬虫环境：
 
@@ -72,9 +78,9 @@ lxml==4.5.1
 
 - fd
 
+<br>
 
-
-**数据抽取**：
+## <span id="dataextraction">1.2 数据抽取</span>
 
 
 
