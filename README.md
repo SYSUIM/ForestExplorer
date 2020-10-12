@@ -14,7 +14,7 @@ ForestExplorer 是完全基于python语言开发的，基于企业内部、行�
 <br><br>
 
 ## 0. Content
----
+
 本节将对我们的工作作简要描述，根据数据处理的工作流程，分为以下三个模块：
 
 - [特征分析框架](#tezhengfenxi)
@@ -33,7 +33,6 @@ ForestExplorer 是完全基于python语言开发的，基于企业内部、行�
 <br>
 
 ## <span id="tezhengfenxi">1. 特征分析框架</span>
----
 特征分析框架主要完成以下工作：[网络爬虫](#spider)、[数据抽取](#dataextraction)。
 
 <br>
@@ -42,9 +41,12 @@ ForestExplorer 是完全基于python语言开发的，基于企业内部、行�
 
 实验中出于对行业的外部环境特征分析的需要，对高新科技门户网站的文本内容进行规则框架内、有限度的爬取，各网站内容详情请见[虎嗅网](https://www.huxiu.com/)，[199IT](http://www.199it.com/)，[36氪](https://36kr.com/)，[雷锋网](https://www.leiphone.com/)，[科学世界网](http://www.twwtn.com)，[维科网](https://www.ofweek.com)。
 
+<br>
 
+**爬虫开发环境**
 
-**爬虫开发环境**：以下为前期网站爬取过程中所使用的 python 第三方包：
+---
+以下为前期网站爬取过程中所使用的 python 第三方包：
 
 |    Packages    | Version |
 | :------------: | :-----: |
@@ -66,59 +68,71 @@ beautifulsoup4==4.9.1
 lxml==4.5.1
 ```
 
-使用 `pip install -r ./SpiderRequirements.txt` 命令完成环境安装，或者可以使用我们提供的 `requirements.txt` 直接完整框架环境的安装。
+使用 `pip install -r ./SpiderRequirements.txt` 命令完成环境安装，或者可以使用我们提供的 `requirements.txt` 使用相同指令直接实现完整框架环境的安装。
 
+<br>
 
+**爬虫代码**：
 
-**爬虫代码**：不同网站结构不同，我们针对每个网站编写了专门的爬虫脚本，在装有以上第三方包的python环境下即可直接运行，请确保文件保存路径符合系统要求。
+---
+不同网站结构不同，我们针对每个网站编写了专门的爬虫脚本，在装有以上第三方包的python环境下即可直接运行，请确保文件保存路径符合系统路径规则。
 
 - [*HuXiu Spider*](Spiders/HuXiu/Spider.py)：虎嗅网爬虫提供了两种爬取方式，分别是流式爬取和关键词爬取。其中，流式爬取主要由方法`crawlJob_Stream` 实现，关键词爬取由 `crawljob_search` 实现，由于流式爬取文章数的限制，现只默认调用关键词爬取方法。该爬虫提供了断点续爬功能，请创建 `./hotKeyword.txt` 文件作为关键词爬取的断点记录文件，或使用本项目提供的模版 [*hotKeyword.txt*](Spiders/HuXiu/hotKeyword.txt) 来实现该功能。此外，为避免高强度访问网站，设置了定时爬取功能，默认间隔时间为30分钟。
   - 运行 `python create.py ` 生成断点配置模板
   - 运行 `python Spider.py` 进行网页爬取，并保存到指定路径
-- 36kr spider：36氪爬虫通过手动获取特定关键词以及callback编码，获取相应关键词的文章。当访问量过大时，会受到访问限制。
+- [*36kr spider*](Spiders\36kr\36kr_spider.py)：36氪爬虫通过手动获取特定关键词以及callback编码，获取相应关键词的文章。使用时当对网站服务器访问量过大，会受到网站访问限制。
   - 运行 `python 36kr_spider.py` 进行网页爬取，并保存到指定路径
-- 199IT spider：199IT爬虫通过自主选取关键词，通过`get_id`获取相应文章对应的id列表，写入文件，然后通过`get_articles`获取相应id的文章内容保存到path中。当访问量过大时，会受到访问限制。
+- [*199IT spider*](Spiders\199IT\199_spider.py)：199IT爬虫通过自主选取关键词，通过 `get_id` 获取相应文章对应的id列表，写入文件，然后通过 `get_articles` 获取相应id的文章内容保存到path中。当访问量过大时，会受到访问限制。
   - 运行 `python 199_spider.py` 进行网页爬取，并保存到指定路径
-- mckinsey spider：mckinsey爬虫通过租住选择关键词，爬取对应文章保存到path中。当访问量过大时，会受到访问限制。
+- [*mckinsey spider*](Spiders\mckinsey\mckinsey_spider.py)：mckinsey爬虫通过租住选择关键词，爬取对应文章保存到path中。当访问量过大时，会受到访问限制。
   - 运行 `python mckinsey_spider.py` 进行网页爬取，并保存到指定路径
 
 <br>
 
-## <span id="dataextraction">1.2 数据抽取</span>
+### <span id="dataextraction">1.2 数据抽取</span>
+实验中对赛事方给出数据集进行抽取工作，从26个数据集中选取相关度较高的数据类型输入模型分析。该部分将简要介绍如何从数据集中抽取数据。
 
-**FileProcess.py**：从26个json文件中抽取特征，处理成为一个静态特征的json文件。
+<br>
 
-参数设置：
+**FileProcess.py**
 
-filelist：需要进行特征抽取的json文件列表，第一个必须是01工商注册.json
+---
+从26个json文件中抽取特征，处理成为一个静态特征的json文件。
 
-typelist：每个json文件对应的处理函数，分别有text,number,boolean三种，text直接保留样本特征内容，number将统计文件中样本某个特征的出现次数，boolean统计样本是否含有某个特征
+- 参数设置：
 
-featurelist：每个json文件中要抽取的特征
+|    Parameter    | Description |
+| :------------: | :-----: |
+|    filelist    |  需要进行特征抽取的json文件列表，第一个必须是 `01工商注册.json` |
+|     typelist       |  每个json文件对应的处理函数，分别有text, number, boolean三种，text直接保留样本特征内容，number将统计文件中样本某个特征的出现次数，boolean统计样本是否含有某个特征  |
+| featurelist |  每个json文件中要抽取的特征 |
+|     jsonlist       |  每个json文件中要抽取的特征  |
 
-jsonlist：静态特征的json文件的保存路径
+<br>
 
-调用方法：
+- 调用方法：`FileProcess(filelist,typelist,featurelist,jsonlist)`
 
-FileProcess(filelist,typelist,featurelist,jsonlist)
+<br>
 
-**TimeSeqSpider.py：**通过公司的证券代码，爬取巨潮资讯上相应公司的基本信息，利润序列信息，现金序列信息，指标序列信息，并返回一个json文件。
+**TimeSeqSpider.py**
 
-参数设置：
+---
+通过公司的证券代码，爬取巨潮资讯上相应公司的基本信息，利润序列信息，现金序列信息，指标序列信息，并返回一个json文件。
 
-companyCodeFile：公司证券代码的csv文件
+- 参数设置：
 
-BaseInfoPath：保存基本信息的json文件路径
+|    Parameter    | Description |
+| :------------: | :-----: |
+|    companyCodeFile    |  公司证券代码的csv文件 |
+|    BaseInfoPath        |  保存基本信息的json文件路径  |
+| LiRunPath | 保存利润序列信息的json文件路径  |
+|   XianJinPath      |  保存现金序列信息的json文件路径  |
+| ZhiBiaoPath | 保存指标序列信息的json文件路径 |
 
-LiRunPath：保存利润序列信息的json文件路径
+<br>
 
-XianJinPath：保存现金序列信息的json文件路径
-
-ZhiBiaoPath：保存指标序列信息的json文件路径
-
-调用方法：
-
-Spider(companyCodeFile,BaseInfoPath,LiRunPath,XianJinPath,ZhiBiaoPath)
+- 调用方法：
+`Spider(companyCodeFile,BaseInfoPath,LiRunPath,XianJinPath,ZhiBiaoPath)`
 
 ## 2. 多元数据策略编码
 
