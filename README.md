@@ -6,7 +6,7 @@
   <img src="https://img.shields.io/badge/pytorch-1.6.0-yellow"/>
   <img src="https://img.shields.io/badge/Anaconda-4.8.3-blue"/>
   <img src="https://img.shields.io/badge/docs-English-green"/>
-  <img src="https://img.shields.io/badge/Bert-unknown-purple"/>
+  <img src="https://img.shields.io/badge/Transformer-2.11.0-purple"/>
 </p>
 
 ForestExplorer 是完全基于python语言开发的，基于企业内部、行业市场外部特征进行发展预测的数据分析框架。使用 Anaconda (4.8.3) 和 pip (20.1.1) 配置代码环境。
