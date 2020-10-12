@@ -80,11 +80,11 @@ lxml==4.5.1
 - [*HuXiu Spider*](Spiders/HuXiu/Spider.py)：虎嗅网爬虫提供了两种爬取方式，分别是流式爬取和关键词爬取。其中，流式爬取主要由方法`crawlJob_Stream` 实现，关键词爬取由 `crawljob_search` 实现，由于流式爬取文章数的限制，现只默认调用关键词爬取方法。该爬虫提供了断点续爬功能，请创建 `./hotKeyword.txt` 文件作为关键词爬取的断点记录文件，或使用本项目提供的模版 [*hotKeyword.txt*](Spiders/HuXiu/hotKeyword.txt) 来实现该功能。此外，为避免高强度访问网站，设置了定时爬取功能，默认间隔时间为30分钟。
   - 运行 `python create.py ` 生成断点配置模板
   - 运行 `python Spider.py` 进行网页爬取，并保存到指定路径
-- [*36kr spider*](Spiders\36kr\36kr_spider.py)：36氪爬虫通过手动获取特定关键词以及callback编码，获取相应关键词的文章。使用时当对网站服务器访问量过大，会受到网站访问限制。
+- [*36kr spider*](Spiders/36kr/36kr_spider.py)：36氪爬虫通过手动获取特定关键词以及callback编码，获取相应关键词的文章。使用时当对网站服务器访问量过大，会受到网站访问限制。
   - 运行 `python 36kr_spider.py` 进行网页爬取，并保存到指定路径
-- [*199IT spider*](Spiders\199IT\199_spider.py)：199IT爬虫通过自主选取关键词，通过 `get_id` 获取相应文章对应的id列表，写入文件，然后通过 `get_articles` 获取相应id的文章内容保存到path中。当访问量过大时，会受到访问限制。
+- [*199IT spider*](Spiders/199IT/199_spider.py)：199IT爬虫通过自主选取关键词，通过 `get_id` 获取相应文章对应的id列表，写入文件，然后通过 `get_articles` 获取相应id的文章内容保存到path中。当访问量过大时，会受到访问限制。
   - 运行 `python 199_spider.py` 进行网页爬取，并保存到指定路径
-- [*mckinsey spider*](Spiders\mckinsey\mckinsey_spider.py)：mckinsey爬虫通过租住选择关键词，爬取对应文章保存到path中。当访问量过大时，会受到访问限制。
+- [*mckinsey spider*](Spiders/mckinsey/mckinsey_spider.py)：mckinsey爬虫通过租住选择关键词，爬取对应文章保存到path中。当访问量过大时，会受到访问限制。
   - 运行 `python mckinsey_spider.py` 进行网页爬取，并保存到指定路径
 
 <br>
@@ -94,7 +94,7 @@ lxml==4.5.1
 
 <br>
 
-**FileProcess.py**
+[**FileProcess.py**](dataProcess/FlieProcess.py)
 
 ---
 从26个json文件中抽取特征，处理成为一个静态特征的json文件。
@@ -114,7 +114,7 @@ lxml==4.5.1
 
 <br>
 
-**TimeSeqSpider.py**
+[**TimeSeqSpider.py**](dataProcess/TimeSeqSpider.py)
 
 ---
 通过公司的证券代码，爬取巨潮资讯上相应公司的基本信息，利润序列信息，现金序列信息，指标序列信息，并返回一个json文件。
@@ -141,99 +141,96 @@ lxml==4.5.1
 <br>
 
 ### <span id = "onehot">2.1 One-hot编码</span>
+针对数据集中的结构化非数据特征，根据one-hot编码规则进行转换。
 
-针对数据集中的结构化非数据特征
+<br>
 
-Json2Onehot.py：将静态json的文件转为csv文件，对其中的离散型文字特征进行one-hot编码，对所有的数字特征进行归一化处理，转成数组并以txt形式保存。
+[**Json2Onehot.py**](dataProcess/Json2Onehot.py)
 
-参数设置：
+---
+将静态json的文件转为csv文件，对其中的离散型文字特征进行one-hot编码，对所有的数字特征进行归一化处理，转成数组并以txt形式保存。
 
-jsonpath：静态特征json文件的路径
+- 参数设置：
 
-csvpath：形成csv文件的路径
+|    Parameter    | Description |
+| :------------: | :-----: |
+|    jsonpath    | 静态特征json文件的路径  |
+|    csvpath     |  形成csv文件的路径  |
+| arrpath |  形成的数组文件的路径 |
+|     feaList    |  特征列表  |
 
-arrpath：形成的数组文件的路径  
+<br>
 
-feaList：特征列表
+- 调用方法：
+  - `JsonToCSV(csvpath,jsonpath,feaList)`
+  - `getArr(csvpath,arrpath)`
 
-调用方法：
+<br>
 
-JsonToCSV(csvpath,jsonpath,feaList)
+### <span id = "bert">2.2 Bert编码</span>
 
-getArr(csvpath,arrpath)
+<br>
 
-### 2.2 Bert编码
+[**GetNewsCode.py**](dataProcess/GetNewsCode.py)
 
-**GetNewsCode.py：**利用Google预训练好的模型，对抽取的新闻文本进行编码，填充至定长之后，以csv形式保存。
+---
+利用Google预训练好的模型，对抽取的新闻文本进行编码，填充至定长之后，以csv形式保存。
 
-参数设置：
+- 参数设置：
 
-bertpath：Google预训练好的模型的保存路径
+|    Parameter    | Description |
+| :------------: | :-----: |
+|    bertpath    | Google预训练好的模型的保存路径  |
+|    jsonpath     |  新闻文本的json文件路径  |
+| newsdirpath |  将每一条新闻编号后形成的数组文件保存的目录 |
+| padnewsdirpath    |  将编码好的数组文件填充至定长的新数组文件的保存目录  |
+| csvpath | 拼接好的所有样本的新闻编码csv文件的保存路径 |
 
-jsonpath：新闻文本的json文件路径
+<br>
 
-newsdirpath：将每一条新闻编号后形成的数组文件保存的目录
+- 调用方法：
+  - `BertCode(bertpath,jsonpath,newsdirpath)`
+  - `getPadCode(newsdirpath,padnewsdirpath)`
+  - `getNewsCodeCsv(padnewsdirpath,csvpath,get_max_length(newsdirpath))`
 
-padnewsdirpath：将编码好的数组文件填充至定长的新数组文件的保存目录
+<br>
 
-csvpath：拼接好的所有样本的新闻编码csv文件的保存路径
+### <span id = "datanormalization">2.3 数据归一化</span>
 
-调用方法：
+<br>
 
-BertCode(bertpath,jsonpath,newsdirpath) 
+[**TimeSeqProcess.py**](dataProcess/TimeSeqProcess.py)
 
-getPadCode(newsdirpath,padnewsdirpath)
+---
+处理时间序列，包括特征的拼接，序列时间的跨度选择，数据的归一化处理，产生模型的输入输出数组。
 
-getNewsCodeCsv(padnewsdirpath,csvpath,get_max_length(newsdirpath))
+- 参数设置：
 
-### 2.3 数据归一化
+|    Parameter    | Description |
+| :------------: | :-----: |
+|  csvpath1    | 利润序列json文件的路径  |
+|  csvpath2     |  现金序列json文件的路径  |
+| csvpath3 |  指标序列json文件的路径 |
+| csvpath4 |  外部特征序列json文件的路径  |
+| csvpath12_19 | 不包括新闻特征的12-19年的时间序列csv文件 |
+| csvpath13_20 | 不包括新闻特征的13-20年的时间序列csv文件 |
+| arrpath12_19 | 不包括新闻特征的12-19年的时间序列数组txt文件 |
+| arrpath13_20 | 不包括新闻特征的13-20年的时间序列数组txt文件 |
+| startyear | 输入数组的时间起始年份 |
+| arrYpath | 不包含新闻特征的输出数组的txt文件保存的路径 |
+| topiclist | 输出数组的特征名称 |
+| matchpath | 新闻样本与时间序列样本的匹配关系的csv文件 |
+| arrnewspath | 包含新闻特征的时间序列数组文件的保存路径 |
+| arrnewsYpath | 包含新闻特征的输出数组的txt文件保存的路径 |
+| del_arrpath | 删除某个特征后的输入数组txt文件保存的路径 |
+| del_topic | 删除的特征，为“TimeSeq”，“Environment”，“News” |
 
-**TimeSeqProcess.py**：处理时间序列，包括特征的拼接，序列时间的跨度选择，数据的归一化处理，产生模型的输入输出数组。
+<br>
 
-参数设置：
-
-csvpath1：利润序列json文件的路径
-
-csvpath2：现金序列json文件的路径
-
-csvpath3：指标序列json文件的路径
-
-csvpath4：外部特征序列json文件的路径
-
-csvpath12_19：不包括新闻特征的12-19年的时间序列csv文件
-
-csvpath13_20：不包括新闻特征的13-20年的时间序列csv文件
-
-arrpath12_19：不包括新闻特征的12-19年的时间序列数组txt文件
-
-arrpath13_20：不包括新闻特征的13-20年的时间序列数组txt文件
-
-startyear：输入数组的时间起始年份
-
-arrYpath：不包含新闻特征的输出数组的txt文件保存的路径
-
-topiclist：输出数组的特征名称
-
-matchpath：新闻样本与时间序列样本的匹配关系的csv文件
-
-arrnewspath：包含新闻特征的时间序列数组文件的保存路径
-
-arrnewsYpath：包含新闻特征的输出数组的txt文件保存的路径
-
-del_arrpath：删除某个特征后的输入数组txt文件保存的路径
-
-del_topic：删除的特征，为“TimeSeq”，“Environment”，“News”
-
-调用方法：
-
-getAllCsv(csvpath1,csvpath2,csvpath3,csvpath4,csvpath12_19,startyear)
-
-getarr(csvpath12_19,arrpath12_19)
-
-getarrY(csvpath13_20,arrYpath,topiclist)
-
-newsSeqconcat(csvpath12_19,arrpath12_19,matchpath,arrnewspath)
-
-getNewsSeq_Y(arrYpath,matchpath,arrnewsYpath)
-
-delPartCode(arrpath12_19,del_arrpath,del_topic)
+- 调用方法：
+  - `getAllCsv(csvpath1,csvpath2,csvpath3,csvpath4,csvpath12_19,startyear)`
+  - `getarr(csvpath12_19,arrpath12_19)`
+  - `getarrY(csvpath13_20,arrYpath,topiclist)`
+  - `newsSeqconcat(csvpath12_19,arrpath12_19,matchpath,arrnewspath)`
+  - `getNewsSeq_Y(arrYpath,matchpath,arrnewsYpath)`
+  - `delPartCode(arrpath12_19,del_arrpath,del_topic)`
