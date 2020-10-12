@@ -68,4 +68,4 @@ for epoch in range(num_epochs):
         print('Epoch [%d/%d], Loss: %.4f' % (epoch + 1, num_epochs, loss.item()))
 
 # Save the Model
-torch.save(model.state_dict(), 'model.pkl')
+torch.save(model.state_dict(), 'SNN_model.pkl')
