@@ -134,9 +134,15 @@ lxml==4.5.1
 - 调用方法：
 `Spider(companyCodeFile,BaseInfoPath,LiRunPath,XianJinPath,ZhiBiaoPath)`
 
-## 2. 多元数据策略编码
+<br>
 
-### 2.1 One-hot编码
+## <span id="encoding">2. 多元数据策略编码</span>
+
+<br>
+
+### <span id = "onehot">2.1 One-hot编码</span>
+
+针对数据集中的结构化非数据特征
 
 Json2Onehot.py：将静态json的文件转为csv文件，对其中的离散型文字特征进行one-hot编码，对所有的数字特征进行归一化处理，转成数组并以txt形式保存。
 
