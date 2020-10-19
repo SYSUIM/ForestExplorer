@@ -80,12 +80,14 @@ lxml==4.5.1
 - [*HuXiu Spider*](Spiders/HuXiu/Spider.py)：虎嗅网爬虫提供了两种爬取方式，分别是流式爬取和关键词爬取。其中，流式爬取主要由方法`crawlJob_Stream` 实现，关键词爬取由 `crawljob_search` 实现，由于流式爬取文章数的限制，现只默认调用关键词爬取方法。该爬虫提供了断点续爬功能，请创建 `./hotKeyword.txt` 文件作为关键词爬取的断点记录文件，或使用本项目提供的模版 [*hotKeyword.txt*](Spiders/HuXiu/hotKeyword.txt) 来实现该功能。此外，为避免高强度访问网站，设置了定时爬取功能，默认间隔时间为30分钟。
   - 运行 `python create.py ` 生成断点配置模板
   - 运行 `python Spider.py` 进行网页爬取，并保存到指定路径
-- [*36kr spider*](Spiders/36kr/36kr_spider.py)：36氪爬虫通过手动获取特定关键词以及callback编码，获取相应关键词的文章。使用时当对网站服务器访问量过大，会受到网站访问限制。
+- [*36kr Spider*](Spiders/36kr/36kr_spider.py)：36氪爬虫通过手动获取特定关键词以及callback编码，获取相应关键词的文章。使用时当对网站服务器访问量过大，会受到网站访问限制。
   - 运行 `python 36kr_spider.py` 进行网页爬取，并保存到指定路径
-- [*199IT spider*](Spiders/199IT/199_spider.py)：199IT爬虫通过自主选取关键词，通过 `get_id` 获取相应文章对应的id列表，写入文件，然后通过 `get_articles` 获取相应id的文章内容保存到path中。当访问量过大时，会受到访问限制。
+- [*199IT Spider*](Spiders/199IT/199_spider.py)：199IT爬虫通过自主选取关键词，通过 `get_id` 获取相应文章对应的id列表，写入文件，然后通过 `get_articles` 获取相应id的文章内容保存到path中。当访问量过大时，会受到访问限制。
   - 运行 `python 199_spider.py` 进行网页爬取，并保存到指定路径
-- [*mckinsey spider*](Spiders/mckinsey/mckinsey_spider.py)：mckinsey爬虫通过租住选择关键词，爬取对应文章保存到path中。当访问量过大时，会受到访问限制。
+- [*Mckinsey Spider*](Spiders/mckinsey/mckinsey_spider.py)：mckinsey爬虫通过租住选择关键词，爬取对应文章保存到path中。当访问量过大时，会受到访问限制。
   - 运行 `python mckinsey_spider.py` 进行网页爬取，并保存到指定路径
+- [*Kexueshijie Spider*]()：用 `requests` 库爬取文本，对Unicode进行解码，再删除HTML的标签和“\“符号，使文本成为可转化为json的字符串。再将字符串转为json格式，获取新闻的标题、id、时间和内容，并写入txt文件中保存。
+  - 运行 `python kexueshijie_spider.py`进行网页爬取，并保存到指定路径
 
 <br>
 
@@ -133,6 +135,29 @@ lxml==4.5.1
 
 - 调用方法：
 `Spider(companyCodeFile,BaseInfoPath,LiRunPath,XianJinPath,ZhiBiaoPath)`
+
+<br>
+
+[**getExternalCharacteristic.py**](dataProcess/getExternalCharateristic.py)
+
+---
+通过爬取国家统计局[https://data.stats.gov.cn/](https://data.stats.gov.cn/)发布的年度数据，得到50个行业的年度报表csv文件，归一化处理外部特征数据，将行业外部特征（行业所得利润）全部转换为该年利润与上一年利润的比值，根据企业所属行业与爬取得到的行业报表进行匹配，得到公司最终行业以及外部特征。
+
+- 参数设置：
+
+| Parameter                  | Description                          |
+| -------------------------- | ------------------------------------ |
+| IndustryList               | 爬取所得行业的名称列表               |
+| csvfilePath                | 爬取所得行业报表csv文件路径          |
+| BaseInfoList               | 保存企业行业代码、所属行业信息的列表 |
+| Characteristic             | 保存某行业2012-2020年度特征的字典    |
+| ExternalCharacteristicDic  | 保存某企业行业代码、外部特征的字典   |
+| ExternalCharacteristicList | 保存所有企业行业代码、外部特征的列表 |
+
+- 调用方法:
+  - `getBaseInfo()`
+  - `getAccelerate(industry)`
+  - `getCSV(AccelerateInfo)`
 
 <br>
 
